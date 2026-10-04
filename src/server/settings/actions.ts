@@ -1,6 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
+import { requirePermission, requireUser } from "@/lib/server-auth";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // ============ General Config ============
