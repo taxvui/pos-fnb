@@ -9,7 +9,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useI18n } from "@/i18n/context";
 
-type Config = { restaurantName: string; address?: string | null; phone?: string | null; email?: string | null; taxCode?: string | null; taxMode?: string | null };
+type Config = { restaurantName: string; address?: string | null; phone?: string | null; email?: string | null; taxCode?: string | null; taxMode?: string | null; qrBankCode?: string | null; qrAccountNumber?: string | null; qrAccountName?: string | null };
+
+const vietnameseBanks = [
+  { code: "ICB", name: "VietinBank", logo: "https://img.vietqr.io/image/ICB.png" },
+  { code: "VCB", name: "Vietcombank", logo: "https://img.vietqr.io/image/VCB.png" },
+  { code: "BIDV", name: "BIDV", logo: "https://img.vietqr.io/image/BIDV.png" },
+  { code: "CTG", name: "VietinBank (CTG)", logo: "https://img.vietqr.io/image/CTG.png" },
+  { code: "TCB", name: "Techcombank", logo: "https://img.vietqr.io/image/TCB.png" },
+  { code: "ACB", name: "ACB", logo: "https://img.vietqr.io/image/ACB.png" },
+  { code: "MBB", name: "MB Bank", logo: "https://img.vietqr.io/image/MBB.png" },
+  { code: "VPB", name: "VPBank", logo: "https://img.vietqr.io/image/VPB.png" },
+  { code: "STB", name: "Sacombank", logo: "https://img.vietqr.io/image/STB.png" },
+  { code: "TPB", name: "TPBank", logo: "https://img.vietqr.io/image/TPB.png" },
+  { code: "HDB", name: "HDBank", logo: "https://img.vietqr.io/image/HDB.png" },
+  { code: "VIB", name: "VIB", logo: "https://img.vietqr.io/image/VIB.png" },
+];
 type ActionResult = void;
 
 export function GeneralConfigForm({ config, action }: { config: Config | null; action: (data: any) => ActionResult }) {
@@ -22,6 +37,9 @@ export function GeneralConfigForm({ config, action }: { config: Config | null; a
     email: config?.email ?? "",
     taxCode: config?.taxCode ?? "",
     taxMode: config?.taxMode ?? "EXCLUSIVE",
+    qrBankCode: config?.qrBankCode ?? "ICB",
+    qrAccountNumber: config?.qrAccountNumber ?? "11415686",
+    qrAccountName: config?.qrAccountName ?? "HO KINH DOANH SAI GON AN COFFEE",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -72,6 +90,29 @@ export function GeneralConfigForm({ config, action }: { config: Config | null; a
                 ? t.inventory.taxIncludedDesc
                 : t.inventory.taxNotIncludedDesc}
             </p>
+          </div>
+          <div className="border-t pt-5">
+            <h3 className="font-semibold">Thanh toán QR động</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Thông tin này được dùng để tạo mã VietQR theo đúng số tiền của hóa đơn.</p>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="qrBankCode">Ngân hàng</Label>
+                <Select value={form.qrBankCode} onValueChange={v => setForm(f => ({ ...f, qrBankCode: v || "ICB" }))}>
+                  <SelectTrigger id="qrBankCode"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {vietnameseBanks.map(bank => <SelectItem key={bank.code} value={bank.code}><span className="inline-flex items-center gap-2"><img src={bank.logo} alt="" className="size-5 rounded object-contain" />{bank.name}</span></SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="qrAccountNumber">Số tài khoản</Label>
+                <Input id="qrAccountNumber" inputMode="numeric" value={form.qrAccountNumber} onChange={e => setForm(f => ({ ...f, qrAccountNumber: e.target.value.replace(/[^0-9]/g, "") }))} required />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="qrAccountName">Tên tài khoản</Label>
+                <Input id="qrAccountName" value={form.qrAccountName} onChange={e => setForm(f => ({ ...f, qrAccountName: e.target.value.toUpperCase() }))} required />
+              </div>
+            </div>
           </div>
           <Button type="submit" disabled={saving}>{saving ? t.common.saving : t.common.save}</Button>
         </CardContent>
