@@ -17,6 +17,9 @@ export async function updateGeneralConfig(data: {
   taxCode?: string;
   taxMode?: string;
   logoUrl?: string;
+  qrBankCode?: string;
+  qrAccountNumber?: string;
+  qrAccountName?: string;
   currencyCode?: string;
 }) {
   await db.generalConfig.upsert({
